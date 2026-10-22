@@ -251,6 +251,27 @@
     renderizarTudo();
   }
 
+  function abrirConfirmacao(id) {
+    idParaExcluir = id;
+    elementos.modalConfirmacao.hidden = false;
+    document.body.classList.add("modal-aberto");
+    elementos.confirmarExclusao.focus();
+  }
+
+  function fecharConfirmacao() {
+    idParaExcluir = null;
+    elementos.modalConfirmacao.hidden = true;
+    document.body.classList.remove("modal-aberto");
+  }
+
+  function excluirCompromisso() {
+    if (!idParaExcluir) return;
+    compromissos = compromissos.filter((compromisso) => compromisso.id !== idParaExcluir);
+    salvarCompromissos();
+    fecharConfirmacao();
+    renderizarTudo();
+  }
+
   function mudarMes(deslocamento) {
     mesExibido = new Date(mesExibido.getFullYear(), mesExibido.getMonth() + deslocamento, 1);
     dataSelecionada = formatarDataChave(mesExibido);
@@ -276,6 +297,23 @@
   elementos.formulario.addEventListener("submit", salvarFormulario);
   elementos.modal.querySelectorAll("[data-fechar-modal]").forEach((botao) => {
     botao.addEventListener("click", fecharFormulario);
+  });
+  elementos.lista.addEventListener("click", (evento) => {
+    const botao = evento.target.closest("button[data-acao]");
+    if (!botao) return;
+    const id = botao.closest("[data-id]").dataset.id;
+    const compromisso = compromissos.find((item) => item.id === id);
+    if (botao.dataset.acao === "editar" && compromisso) abrirFormulario(compromisso);
+    if (botao.dataset.acao === "excluir") abrirConfirmacao(id);
+  });
+  elementos.modalConfirmacao.querySelectorAll("[data-fechar-confirmacao]").forEach((botao) => {
+    botao.addEventListener("click", fecharConfirmacao);
+  });
+  elementos.confirmarExclusao.addEventListener("click", excluirCompromisso);
+  document.addEventListener("keydown", (evento) => {
+    if (evento.key !== "Escape") return;
+    if (!elementos.modalConfirmacao.hidden) fecharConfirmacao();
+    else if (!elementos.modal.hidden) fecharFormulario();
   });
 
   renderizarTudo();
