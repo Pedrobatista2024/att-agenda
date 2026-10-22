@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Agenda pessoal de compromissos de Pedro Batista">
+  <title>Minha Agenda | Pedro Batista</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="cabecalho">
+    <div>
+      <p class="saudacao">Organize o seu dia</p>
+      <h1>Minha Agenda</h1>
+    </div>
+    <button id="alternar-tema" class="botao-icone" type="button" aria-label="Ativar tema escuro" title="Alternar tema">
+      <span aria-hidden="true">☾</span>
+    </button>
+  </header>
+
+  <main class="conteudo">
+    <section class="painel calendario-painel" aria-labelledby="titulo-mes">
+      <div class="calendario-cabecalho">
+        <div>
+          <p class="rotulo">Calendário</p>
+          <h2 id="titulo-mes" aria-live="polite"></h2>
+        </div>
+        <nav class="navegacao-meses" aria-label="Navegação entre meses">
+          <button id="mes-anterior" class="botao-icone" type="button" aria-label="Mês anterior">‹</button>
+          <button id="ir-hoje" class="botao-secundario" type="button">Hoje</button>
+          <button id="proximo-mes" class="botao-icone" type="button" aria-label="Próximo mês">›</button>
+        </nav>
+      </div>
+
+      <div class="dias-semana" aria-hidden="true">
+        <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span>
+        <span>Qui</span><span>Sex</span><span>Sáb</span>
+      </div>
+      <div id="calendario" class="calendario" role="grid" aria-label="Dias do mês"></div>
+    </section>
+
+    <aside class="coluna-lateral">
+      <section class="painel compromissos-painel" aria-labelledby="titulo-dia">
+        <div class="secao-cabecalho">
+          <div>
+            <p class="rotulo">Compromissos</p>
+            <h2 id="titulo-dia">Selecione um dia</h2>
+          </div>
+          <button id="novo-compromisso" class="botao-primario" type="button">+ Novo</button>
+        </div>
+        <div id="lista-compromissos" class="lista-compromissos" aria-live="polite"></div>
+      </section>
+    </aside>
+  </main>
+
+  <div id="modal-compromisso" class="modal" hidden>
+    <div class="modal-fundo" data-fechar-modal></div>
+    <section class="modal-conteudo" role="dialog" aria-modal="true" aria-labelledby="titulo-formulario">
+      <div class="secao-cabecalho">
+        <h2 id="titulo-formulario">Novo compromisso</h2>
+        <button class="botao-icone" type="button" data-fechar-modal aria-label="Fechar formulário">×</button>
+      </div>
+
+      <form id="formulario-compromisso" novalidate>
+        <input id="compromisso-id" type="hidden">
+        <div class="campo campo-inteiro">
+          <label for="titulo">Título <span aria-hidden="true">*</span></label>
+          <input id="titulo" name="titulo" type="text" maxlength="80" autocomplete="off" required>
+          <small class="mensagem-erro" data-erro="titulo"></small>
+        </div>
+        <div class="campo campo-inteiro">
+          <label for="data">Data <span aria-hidden="true">*</span></label>
+          <input id="data" name="data" type="date" required>
+          <small class="mensagem-erro" data-erro="data"></small>
+        </div>
+        <div class="campos-lado-a-lado">
+          <div class="campo">
+            <label for="hora-inicio">Início</label>
+            <input id="hora-inicio" name="horaInicio" type="time">
+          </div>
+          <div class="campo">
+            <label for="hora-termino">Término</label>
+            <input id="hora-termino" name="horaTermino" type="time">
+          </div>
+          <small class="mensagem-erro erro-horario" data-erro="horario"></small>
+        </div>
+        <div class="campo campo-inteiro">
+          <label for="categoria">Categoria</label>
+          <select id="categoria" name="categoria">
+            <option value="trabalho">Trabalho</option>
+            <option value="estudo">Estudo</option>
+            <option value="pessoal">Pessoal</option>
+            <option value="saude">Saúde</option>
+          </select>
+        </div>
+        <div class="campo campo-inteiro">
+          <label for="descricao">Descrição</label>
+          <textarea id="descricao" name="descricao" rows="3" maxlength="300"></textarea>
+        </div>
+        <div class="acoes-formulario">
+          <button class="botao-secundario" type="button" data-fechar-modal>Cancelar</button>
+          <button class="botao-primario" type="submit">Salvar compromisso</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <div id="modal-confirmacao" class="modal" hidden>
+    <div class="modal-fundo" data-fechar-confirmacao></div>
+    <section class="modal-conteudo modal-pequeno" role="alertdialog" aria-modal="true" aria-labelledby="titulo-confirmacao" aria-describedby="texto-confirmacao">
+      <h2 id="titulo-confirmacao">Excluir compromisso?</h2>
+      <p id="texto-confirmacao">Esta ação não poderá ser desfeita.</p>
+      <div class="acoes-formulario">
+        <button class="botao-secundario" type="button" data-fechar-confirmacao>Cancelar</button>
+        <button id="confirmar-exclusao" class="botao-perigo" type="button">Excluir</button>
+      </div>
+    </section>
+  </div>
+
+  <footer>Feito por <strong>Pedro Batista</strong></footer>
+  <script src="script.js"></script>
+</body>
+</html>
