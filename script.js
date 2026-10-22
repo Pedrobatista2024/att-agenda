@@ -167,5 +167,26 @@
     renderizarLista();
   }
 
+  function mudarMes(deslocamento) {
+    mesExibido = new Date(mesExibido.getFullYear(), mesExibido.getMonth() + deslocamento, 1);
+    dataSelecionada = formatarDataChave(mesExibido);
+    renderizarTudo();
+  }
+
+  elementos.mesAnterior.addEventListener("click", () => mudarMes(-1));
+  elementos.proximoMes.addEventListener("click", () => mudarMes(1));
+  elementos.irHoje.addEventListener("click", () => {
+    mesExibido = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+    dataSelecionada = formatarDataChave(hoje);
+    renderizarTudo();
+  });
+
+  elementos.calendario.addEventListener("click", (evento) => {
+    const dia = evento.target.closest("button[data-data]");
+    if (!dia) return;
+    dataSelecionada = dia.dataset.data;
+    renderizarTudo();
+  });
+
   renderizarTudo();
 })();
