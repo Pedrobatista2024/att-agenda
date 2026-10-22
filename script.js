@@ -167,6 +167,90 @@
     renderizarLista();
   }
 
+  function limparErros() {
+    elementos.formulario.querySelectorAll(".mensagem-erro").forEach((mensagem) => {
+      mensagem.textContent = "";
+    });
+    elementos.formulario.querySelectorAll(".campo-invalido").forEach((campo) => {
+      campo.classList.remove("campo-invalido");
+    });
+  }
+
+  function exibirErro(campo, mensagem, campoRelacionado) {
+    elementos.formulario.querySelector(`[data-erro="${campo}"]`).textContent = mensagem;
+    if (campoRelacionado) campoRelacionado.classList.add("campo-invalido");
+  }
+
+  function abrirFormulario(compromisso = null) {
+    elementos.formulario.reset();
+    limparErros();
+    elementos.formulario.querySelector("#compromisso-id").value = compromisso?.id || "";
+    elementos.formulario.elements.titulo.value = compromisso?.titulo || "";
+    elementos.formulario.elements.data.value = compromisso?.data || dataSelecionada;
+    elementos.formulario.elements.horaInicio.value = compromisso?.horaInicio || "";
+    elementos.formulario.elements.horaTermino.value = compromisso?.horaTermino || "";
+    elementos.formulario.elements.categoria.value = compromisso?.categoria || "pessoal";
+    elementos.formulario.elements.descricao.value = compromisso?.descricao || "";
+    elementos.tituloFormulario.textContent = compromisso ? "Editar compromisso" : "Novo compromisso";
+    elementos.modal.hidden = false;
+    document.body.classList.add("modal-aberto");
+    elementos.formulario.elements.titulo.focus();
+  }
+
+  function fecharFormulario() {
+    elementos.modal.hidden = true;
+    document.body.classList.remove("modal-aberto");
+    elementos.novoCompromisso.focus();
+  }
+
+  function validarFormulario(dados) {
+    limparErros();
+    let valido = true;
+    if (!dados.titulo) {
+      exibirErro("titulo", "Informe um título para o compromisso.", elementos.formulario.elements.titulo);
+      valido = false;
+    }
+    if (!dados.data) {
+      exibirErro("data", "Escolha a data do compromisso.", elementos.formulario.elements.data);
+      valido = false;
+    }
+    if (dados.horaInicio && dados.horaTermino && dados.horaTermino < dados.horaInicio) {
+      exibirErro("horario", "O término deve ser igual ou posterior ao início.", elementos.formulario.elements.horaTermino);
+      valido = false;
+    }
+    return valido;
+  }
+
+  function gerarId() {
+    return globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  }
+
+  function salvarFormulario(evento) {
+    evento.preventDefault();
+    const dadosFormulario = new FormData(elementos.formulario);
+    const compromisso = {
+      id: elementos.formulario.querySelector("#compromisso-id").value || gerarId(),
+      titulo: dadosFormulario.get("titulo").trim(),
+      data: dadosFormulario.get("data"),
+      horaInicio: dadosFormulario.get("horaInicio"),
+      horaTermino: dadosFormulario.get("horaTermino"),
+      categoria: dadosFormulario.get("categoria"),
+      descricao: dadosFormulario.get("descricao").trim()
+    };
+    if (!validarFormulario(compromisso)) return;
+
+    const indice = compromissos.findIndex((item) => item.id === compromisso.id);
+    if (indice >= 0) compromissos[indice] = compromisso;
+    else compromissos.push(compromisso);
+
+    salvarCompromissos();
+    dataSelecionada = compromisso.data;
+    const novaData = criarDataLocal(compromisso.data);
+    mesExibido = new Date(novaData.getFullYear(), novaData.getMonth(), 1);
+    fecharFormulario();
+    renderizarTudo();
+  }
+
   function mudarMes(deslocamento) {
     mesExibido = new Date(mesExibido.getFullYear(), mesExibido.getMonth() + deslocamento, 1);
     dataSelecionada = formatarDataChave(mesExibido);
@@ -186,6 +270,12 @@
     if (!dia) return;
     dataSelecionada = dia.dataset.data;
     renderizarTudo();
+  });
+
+  elementos.novoCompromisso.addEventListener("click", () => abrirFormulario());
+  elementos.formulario.addEventListener("submit", salvarFormulario);
+  elementos.modal.querySelectorAll("[data-fechar-modal]").forEach((botao) => {
+    botao.addEventListener("click", fecharFormulario);
   });
 
   renderizarTudo();
