@@ -272,6 +272,19 @@
     renderizarTudo();
   }
 
+  function aplicarTema(tema) {
+    document.documentElement.dataset.tema = tema;
+    const temaEscuro = tema === "escuro";
+    elementos.alternarTema.querySelector("span").textContent = temaEscuro ? "☀" : "☾";
+    elementos.alternarTema.setAttribute("aria-label", `Ativar tema ${temaEscuro ? "claro" : "escuro"}`);
+  }
+
+  function carregarTema() {
+    const temaSalvo = localStorage.getItem(CHAVE_TEMA);
+    if (temaSalvo === "claro" || temaSalvo === "escuro") return temaSalvo;
+    return matchMedia("(prefers-color-scheme: dark)").matches ? "escuro" : "claro";
+  }
+
   function mudarMes(deslocamento) {
     mesExibido = new Date(mesExibido.getFullYear(), mesExibido.getMonth() + deslocamento, 1);
     dataSelecionada = formatarDataChave(mesExibido);
@@ -310,11 +323,17 @@
     botao.addEventListener("click", fecharConfirmacao);
   });
   elementos.confirmarExclusao.addEventListener("click", excluirCompromisso);
+  elementos.alternarTema.addEventListener("click", () => {
+    const novoTema = document.documentElement.dataset.tema === "escuro" ? "claro" : "escuro";
+    localStorage.setItem(CHAVE_TEMA, novoTema);
+    aplicarTema(novoTema);
+  });
   document.addEventListener("keydown", (evento) => {
     if (evento.key !== "Escape") return;
     if (!elementos.modalConfirmacao.hidden) fecharConfirmacao();
     else if (!elementos.modal.hidden) fecharFormulario();
   });
 
+  aplicarTema(carregarTema());
   renderizarTudo();
 })();
